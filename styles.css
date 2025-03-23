@@ -1,0 +1,10 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 20px;
+}
+
+#chessboard {
+  width: 400px;
+  margin: 20px auto;
+}
