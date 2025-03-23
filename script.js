@@ -78,7 +78,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateStatus () {
-    let statusHTML = ''
+    console.table(game.board());
+    let statusHTML = '';
     
     if (playerColor != game.turn()) {
       aiMove();
@@ -162,6 +163,120 @@ document.addEventListener("DOMContentLoaded", () => {
             case 'k': blackScore += 9000; break;
             default: break; // Ignore other characters (e.g., numbers or slashes)
         }
+    }
+
+    var reverseArray = function(array) {
+      return array.slice().reverse();
+  };
+  
+  var pawnEvalWhite =
+      [
+          [0,  0,  0,  0,  0,  0,  0,  0],
+          [50,  50,  50,  50,  50,  50,  50,  50],
+          [10,  10,  20,  30,  30,  20,  10,  10],
+          [5,  5,  10,  25,  25,  10,  5,  5],
+          [0,  0,  0,  20,  20,  0,  0,  0],
+          [5, -5, -10,  0,  0, -10, -5,  5],
+          [5,  10, 10,  -20, -20,  10,  10,  5],
+          [0,  0,  0,  0,  0,  0,  0,  0]
+      ];
+  
+  var pawnEvalBlack = reverseArray(pawnEvalWhite);
+  
+  var knightEval =
+      [
+          [-50, -40, -30, -30, -30, -30, -40, -50],
+          [-40, -20,  0,  0,  0,  0, -20, -40],
+          [-30,  0,  10,  15,  15,  10,  0, -30],
+          [-30,  5,  15,  20,  20,  15,  5, -30],
+          [-30,  0,  15,  20,  20,  15,  0, -30],
+          [-30,  5,  10,  15,  15,  10,  5, -30],
+          [-40, -20,  0,  5,  5,  0, -20, -40],
+          [-50, -40, -30, -30, -30, -30, -40, -50]
+      ];
+  
+  var bishopEvalWhite = [
+      [ -20, -10, -10, -10, -10, -10, -10, -20],
+      [ -10,  0,  0,  0,  0,  0,  0, -10],
+      [ -10,  0,  5,  10,  10,  5,  0, -10],
+      [ -10,  5,  5,  10,  10,  5,  5, -10],
+      [ -10,  0,  10,  10,  10,  10,  0, -10],
+      [ -10,  10,  10,  10,  10,  10,  10, -10],
+      [ -10,  5,  0,  0,  0,  0,  5, -10],
+      [ -20, -10, -10, -10, -10, -10, -10, -20]
+  ];
+  
+  var bishopEvalBlack = reverseArray(bishopEvalWhite);
+  
+  var rookEvalWhite = [
+      [  0,  0,  0,  0,  0,  0,  0,  0],
+      [  5,  10,  10,  10,  10,  10,  10,  5],
+      [ -5,  0,  0,  0,  0,  0,  0, -5],
+      [ -5,  0,  0,  0,  0,  0,  0, -5],
+      [ -5,  0,  0,  0,  0,  0,  0, -5],
+      [ -5,  0,  0,  0,  0,  0,  0, -5],
+      [ -5,  0,  0,  0,  0,  0,  0, -5],
+      [  0,   0, 0,  5,  5,  0,  0,  0]
+  ];
+  
+  var rookEvalBlack = reverseArray(rookEvalWhite);
+  
+  var evalQueen = [
+      [ -20, -10, -10, -5, -5, -10, -10, -20],
+      [ -10,  0,  0,  0,  0,  0,  0, -10],
+      [ -10,  0,  5,  5,  5,  5,  0, -10],
+      [ -5,  0,  5,  5,  5,  5,  0, -5],
+      [  0,  0,  5,  5,  5,  5,  0, -5],
+      [ -10,  5,  5,  5,  5,  5,  0, -10],
+      [ -10,  0,  5,  0,  0,  0,  0, -10],
+      [ -20, -10, -10, -5, -5, -10, -10, -20]
+  ];
+  
+  var kingEvalWhite = [
+  
+      [ -30, -40, -40, -50, -50, -40, -40, -30],
+      [ -30, -40, -40, -50, -50, -40, -40, -30],
+      [ -30, -40, -40, -50, -50, -40, -40, -30],
+      [ -30, -40, -40, -50, -50, -40, -40, -30],
+      [ -20, -30, -30, -40, -40, -30, -30, -20],
+      [ -10, -20, -20, -20, -20, -20, -20, -10],
+      [  20,  20,  0,  0,  0,  0,  20,  20 ],
+      [  20,  30,  10,  0,  0,  10,  30,  20 ]
+  ];
+  
+  var kingEvalBlack = reverseArray(kingEvalWhite);
+
+    let boardState = game.board();
+
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        let piece = boardState[i][j];
+
+        if (piece) {
+          switch(piece.color) {
+            case 'w':
+              switch(piece.type) {
+                case 'p': blackScore += pawnEvalBlack[i][j]; break;
+                case 'n': blackScore += knightEval[i][j]; break;
+                case 'b': blackScore += bishopEvalBlack[i][j]; break;
+                case 'r': blackScore += rookEvalBlack[i][j]; break;
+                case 'q': blackScore += evalQueen[i][j]; break;
+                case 'k': blackScore += kingEvalBlack[i][j]; break;
+                default: break;
+              }
+            case 'b':
+              switch(piece.type) {
+                case 'p': blackScore += pawnEvalWhite[i][j]; break;
+                case 'n': blackScore += knightEval[i][j]; break;
+                case 'b': blackScore += bishopEvalWhite[i][j]; break;
+                case 'r': blackScore += rookEvalWhite[i][j]; break;
+                case 'q': blackScore += evalQueen[i][j]; break;
+                case 'k': blackScore += kingEvalWhite[i][j]; break;
+                default: break;
+              }
+          }
+        }
+      }
     }
     console.log(blackScore - whiteScore);
     return blackScore - whiteScore; // Higher score is better for the AI
