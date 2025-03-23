@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fenEl = byId('gameFEN')
   const pgnEl = byId('gamePGN')
   const playerColor = document.querySelector('input[name="color"]:checked').value;
+  const boardEval = byId('eval');
 
   updateStatus()
 
@@ -109,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     statusEl.innerHTML = statusHTML
     fenEl.innerHTML = game.fen()
     pgnEl.innerHTML = game.pgn()
+    boardEval.innerText = eval();
   }
   
   function byId (id) {
