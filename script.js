@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function onDragStart (dragStartEvt) {
+    console.log(eval());
     // do not pick up pieces if the game is over
     if (game.game_over()) return false
   
@@ -254,7 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (piece) {
           switch(piece.color) {
-            case 'w':
+            case 'b':
               switch(piece.type) {
                 case 'p': blackScore += pawnEvalBlack[i][j]; break;
                 case 'n': blackScore += knightEval[i][j]; break;
@@ -264,21 +265,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 case 'k': blackScore += kingEvalBlack[i][j]; break;
                 default: break;
               }
-            case 'b':
+              break;
+            case 'w':
               switch(piece.type) {
-                case 'p': blackScore += pawnEvalWhite[i][j]; break;
-                case 'n': blackScore += knightEval[i][j]; break;
-                case 'b': blackScore += bishopEvalWhite[i][j]; break;
-                case 'r': blackScore += rookEvalWhite[i][j]; break;
-                case 'q': blackScore += evalQueen[i][j]; break;
-                case 'k': blackScore += kingEvalWhite[i][j]; break;
+                case 'p': whiteScore += pawnEvalWhite[i][j]; break;
+                case 'n': whiteScore += knightEval[i][j]; break;
+                case 'b': whiteScore += bishopEvalWhite[i][j]; break;
+                case 'r': whiteScore += rookEvalWhite[i][j]; break;
+                case 'q': whiteScore += evalQueen[i][j]; break;
+                case 'k': whiteScore += kingEvalWhite[i][j]; break;
                 default: break;
               }
+              break;
           }
         }
       }
     }
-    console.log(blackScore - whiteScore);
+    console.log(`White Score: ${whiteScore}, Black Score: ${blackScore}, Score: ${blackScore - whiteScore}`);
     return blackScore - whiteScore; // Higher score is better for the AI
   }
 });
