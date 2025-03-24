@@ -12,8 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const board = Chessboard2(boardElement, config);
 
-  
-  
   const statusEl = byId("gameStatus");
   const fenEl = byId("gameFEN");
   const pgnEl = byId("gamePGN");
@@ -23,50 +21,50 @@ document.addEventListener("DOMContentLoaded", () => {
     'input[name="color"]:checked'
   ).value;
   const boardEval = byId("eval");
-  
+
   updateStatus();
-  
+
   function handleMove(source, target) {
     const move = game.move({
       from: source,
       to: target,
       promotion: "q", // Always promote to a queen (simplified)
     });
-    
+
     if (move === null) return "snapback"; // Invalid move
-    
+
     // Update the board position after a valid move
     board.position(game.fen());
   }
-  
+
   function onDragStart(dragStartEvt) {
     console.log(eval());
     // do not pick up pieces if the game is over
     if (game.game_over()) return false;
-    
+
     // only pick up pieces for the side to move
     if (game.turn() === "w" && !isWhitePiece(dragStartEvt.piece)) return false;
     if (game.turn() === "b" && !isBlackPiece(dragStartEvt.piece)) return false;
-    
+
     // what moves are available to from this square?
     const legalMoves = game.moves({
       square: dragStartEvt.square,
       verbose: true,
     });
-    
+
     // place Circles on the possible target squares
     legalMoves.forEach((move) => {
       board.addCircle(move.to);
     });
   }
-  
+
   function isWhitePiece(piece) {
     return /^w/.test(piece);
   }
   function isBlackPiece(piece) {
     return /^b/.test(piece);
   }
-  
+
   function onDrop(dropEvt) {
     // see if the move is legal
     const move = game.move({
@@ -74,10 +72,10 @@ document.addEventListener("DOMContentLoaded", () => {
       to: dropEvt.target,
       promotion: "q", // NOTE: always promote to a queen for example simplicity
     });
-    
+
     // remove all Circles from the board
     board.clearCircles();
-    
+
     // make the move if it is legal
     if (move) {
       // update the board position with the new game position, then update status DOM elements
@@ -88,12 +86,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return "snapback";
     }
   }
-  
+
   async function updateStatus() {
     console.table(game.board());
     let statusHTML = "";
     if (selfPlay) {
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
       aiMove();
     } else {
       if (playerColor != game.turn()) {
@@ -101,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     const whosTurn = game.turn() === "w" ? "White" : "Black";
-    
+
     if (!game.game_over()) {
       if (game.in_check()) statusHTML = whosTurn + " is in check! ";
       statusHTML = statusHTML + whosTurn + " to move.";
@@ -120,34 +118,34 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (game.in_draw()) {
       statusHTML = "Game is drawn by fifty-move rule.";
     }
-    
+
     statusEl.innerHTML = statusHTML;
     fenEl.innerHTML = game.fen();
     pgnEl.innerHTML = game.pgn();
     boardEval.innerText = eval() / 10;
   }
-  
+
   function gameOver() {
-    return (game.in_checkmate());
+    return game.in_checkmate();
   }
   function minimax(depth, isMaximizingPlayer) {
     const moves = game.moves();
     if (depth == 0 || !game.moves()) {
       return { score: eval(), move: null };
     }
-    
+
     let bestMove = null;
     if (isMaximizingPlayer) {
       let val = -Infinity;
       moves.forEach((move) => {
         game.move(move);
-        const result = minimax (depth - 1, false);
+        const result = minimax(depth - 1, false);
         game.undo();
         if (result.score > val) {
           val = result.score;
           bestMove = move;
         }
-      })
+      });
       return { score: val, move: bestMove };
     } else {
       let val = Infinity;
@@ -155,17 +153,16 @@ document.addEventListener("DOMContentLoaded", () => {
         game.move(move);
         const result = minimax(depth - 1, true);
         game.undo();
-        
+
         if (result.score < val) {
           val = result.score;
           bestMove = move;
         }
-      })
+      });
       return { score: val, move: bestMove };
     }
-    
   }
-  
+
   function byId(id) {
     return document.getElementById(id);
   }
@@ -176,18 +173,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const moves = game.moves();
     if (moves.length === 0) return;
 
-    let bestMove = minimax(searchDepth, game.turn() === 'w');
+    let bestMove = minimax(searchDepth, game.turn() === "w");
     console.log(bestMove.move);
     console.log(bestMove.score);
 
-    bestMove = bestMove.move
+    bestMove = bestMove.move;
 
     if (bestMove) {
       game.move(bestMove); // Make the best move
       board.position(game.fen()); // Update the board
       updateStatus(); // Update the status
     } else {
-      console.log("If youre seeing this that means youre stupid")
+      console.log("If youre seeing this that means youre stupid");
     }
 
     let endTime = performance.now();
@@ -195,8 +192,9 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log(moveTimes);
     let total = moveTimes.reduce((acc, num) => acc + num, 0);
     let averageTime = total / moveTimes.length;
-    let timeDisplay = byId('time');
-    timeDisplay.innerHTML = "Average Time Per Move: " + averageTime.toFixed(2) / 1000 + " s";
+    let timeDisplay = byId("time");
+    timeDisplay.innerHTML =
+      "Average Time Per Move: " + averageTime.toFixed(2) / 1000 + " s";
     console.log(averageTime);
   }
 
